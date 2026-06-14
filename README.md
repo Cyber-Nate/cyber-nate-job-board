@@ -4,7 +4,7 @@
 > Built by [Nathaniel T.O.](https://cybernatesec.netlify.app) — Cybersecurity Analyst · SOC · DFIR · Lagos, Nigeria.
 
 ## Live Demo
-🔗 [View Live App](https://your-domain.netlify.app)
+🔗 [View Live App](https://cybernatejobp.netlify.app)
 
 ## Features
 - 🔍 **AI-powered live search** — Claude AI + web search finds real, currently open jobs
@@ -60,7 +60,7 @@ And change `API_URL` to `https://api.anthropic.com/v1/messages`.
 
 ## Portfolio Integration
 Feature this on [cybernatesec.netlify.app](https://cybernatesec.netlify.app) as a project card:
-- **Live App:** `https://your-domain.netlify.app`
+- **Live App:** `https://cybernatejobp.netlify.app`
 - **GitHub:** `https://github.com/Cyber-Nate/cyber-nate-job-board`
 
 ---
