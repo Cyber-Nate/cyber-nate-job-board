@@ -20,7 +20,7 @@ exports.handler = async (event) => {
   }
 
   const headers = {
-    'Access-Control-Allow-Origin': '*', // restrict to your domain in prod: 'https://your-domain.netlify.app'
+    'Access-Control-Allow-Origin': '*', // restrict to your domain in prod
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
@@ -33,21 +33,27 @@ exports.handler = async (event) => {
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-beta': 'interleaved-thinking-2025-05-14' // enables web_search tool
+        'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify(body)
     });
 
     const data = await response.json();
 
+    // Log for debugging in Netlify function logs
+    console.log('Anthropic response status:', response.status);
+    console.log('Anthropic response stop_reason:', data.stop_reason);
+    console.log('Anthropic response content types:', (data.content || []).map(b => b.type));
+
     if (!response.ok) {
+      console.error('Anthropic API error:', JSON.stringify(data));
       return { statusCode: response.status, headers, body: JSON.stringify({ error: data.error || 'API error' }) };
     }
 
     return { statusCode: 200, headers, body: JSON.stringify(data) };
 
   } catch (err) {
+    console.error('Proxy error:', err.message);
     return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
   }
 };
