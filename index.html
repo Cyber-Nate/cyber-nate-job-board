@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyber Nate — AI Global Job Board</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #040c18;
+  --surface: #080f1e;
+  --surface2: #0c1628;
+  --surface3: #111e33;
+  --border: #162540;
+  --border2: #1e3050;
+  --cyan: #00d4ff;
+  --cyan-dim: rgba(0,212,255,0.10);
+  --blue: #0055ff;
+  --gold: #f5c400;
+  --gold-dim: rgba(245,196,0,0.10);
+  --green: #00e09a;
+  --green-dim: rgba(0,224,154,0.10);
+  --red: #ff4060;
+  --red-dim: rgba(255,64,96,0.10);
+  --purple: #9966ff;
+  --purple-dim: rgba(153,102,255,0.10);
+  --orange: #ff8c42;
+  --orange-dim: rgba(255,140,66,0.10);
+  --pink: #ff4db8;
+  --pink-dim: rgba(255,77,184,0.10);
+  --text: #ddeeff;
+  --text2: #7a9abb;
+  --text3: #3a5570;
+  --mono: 'Space Mono', monospace;
+  --sans: 'Inter', sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(0,212,255,0.016) 40px),
+             repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(0,212,255,0.016) 40px);}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(0,85,255,0.07) 0%,transparent 70%);}
+
+.wrap{position:relative;z-index:1;max-width:1140px;margin:0 auto;padding:0 1.5rem 5rem;}
+
+/* HEADER */
+header{padding:1.75rem 0 0;border-bottom:1px solid var(--border);margin-bottom:0;}
+.hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding-bottom:1.25rem;}
+.logo{display:flex;align-items:center;gap:.75rem;}
+.logo-box{width:36px;height:36px;background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:9px;display:grid;place-items:center;font-family:var(--mono);font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.logo-name{font-family:var(--mono);font-size:.82rem;color:var(--cyan);letter-spacing:.06em;}
+.logo-sub{font-size:.67rem;color:var(--text2);}
+.ver{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;padding:3px 10px;border-radius:20px;border:1px solid var(--cyan);color:var(--cyan);background:var(--cyan-dim);}
+
+/* HERO */
+.hero{padding:2.25rem 0 1.75rem;}
+.hero h1{font-size:clamp(1.5rem,3.8vw,2.3rem);font-weight:300;line-height:1.15;letter-spacing:-.02em;}
+.hero h1 em{font-style:normal;color:var(--cyan);font-weight:700;}
+.hero p{color:var(--text2);margin-top:.55rem;font-size:.88rem;max-width:580px;line-height:1.65;}
+
+/* DEPLOY NOTICE */
+.deploy-notice{background:var(--gold-dim);border:1px solid rgba(245,196,0,.22);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1.5rem;font-size:.76rem;color:var(--gold);line-height:1.65;display:none;}
+.deploy-notice code{font-family:var(--mono);font-size:.68rem;background:rgba(0,0,0,.35);padding:1px 5px;border-radius:3px;}
+
+/* CONTROLS PANEL */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;}
+.panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
+@media(max-width:680px){.panel-grid{grid-template-columns:1fr;}}
+.ctrl-full{grid-column:1/-1;}
+
+.clabel{font-family:var(--mono);font-size:.58rem;letter-spacing:.13em;color:var(--text2);display:block;margin-bottom:.55rem;text-transform:uppercase;}
+
+/* ROLE GROUPS */
+.role-groups{display:flex;flex-direction:column;gap:1.1rem;}
+.role-group-head{display:flex;align-items:center;gap:.6rem;margin-bottom:.45rem;}
+.rg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.rg-label{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;}
+
+/* PILLS */
+.pill-row{display:flex;flex-wrap:wrap;gap:.38rem;}
+.pill{padding:4px 12px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:var(--sans);font-size:.73rem;cursor:pointer;transition:all .15s;user-select:none;display:flex;align-items:center;gap:4px;}
+.pill:hover{border-color:var(--cyan);color:var(--text);}
+
+/* Colour variants */
+.sel-cy{background:var(--cyan-dim);border-color:var(--cyan);color:var(--cyan);font-weight:600;}
+.sel-go{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);font-weight:600;}
+.sel-gr{background:var(--green-dim);border-color:var(--green);color:var(--green);font-weight:600;}
+.sel-pu{background:var(--purple-dim);border-color:var(--purple);color:var(--purple);font-weight:600;}
+.sel-or{background:var(--orange-dim);border-color:var(--orange);color:var(--orange);font-weight:600;}
+.sel-pk{background:var(--pink-dim);border-color:var(--pink);color:var(--pink);font-weight:600;}
+
+/* MODE */
+.mode-row{display:flex;flex-wrap:wrap;gap:.38rem;}
+
+/* SEARCH ROW */
+.search-row{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;}
+.kw-input{flex:1;min-width:150px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:9px 14px;color:var(--text);font-family:var(--sans);font-size:.84rem;outline:none;transition:border-color .2s;}
+.kw-input:focus{border-color:var(--cyan);}
+.kw-input::placeholder{color:var(--text3);}
+.go-btn{padding:9px 24px;border:none;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;font-family:var(--sans);font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .2s,transform .1s;white-space:nowrap;}
+.go-btn:hover{opacity:.88;}
+.go-btn:active{transform:scale(.97);}
+.go-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+
+/* PROGRESS */
+.prog-wrap{background:var(--surface2);border-radius:4px;height:3px;margin-top:1rem;overflow:hidden;display:none;}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:4px;transition:width .35s;width:0%;}
+
+/* STATS */
+.stats-bar{display:none;align-items:center;flex-wrap:wrap;gap:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.8rem 1.2rem;margin-bottom:1.25rem;font-family:var(--mono);font-size:.72rem;}
+.stat{display:flex;gap:.45rem;align-items:baseline;}
+.stat-n{font-size:1.05rem;color:var(--cyan);}
+.stat-l{color:var(--text2);}
+
+/* TAB BAR */
+.tab-bar{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.1rem;}
+.tab{padding:5px 14px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:.72rem;font-family:var(--sans);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;}
+.tab:hover{border-color:var(--cyan);color:var(--text);}
+.tab.active{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600;}
+.tab .ct{background:rgba(255,255,255,.18);color:#fff;border-radius:10px;padding:1px 6px;font-size:.6rem;font-family:var(--mono);}
+.tab.tloading{border-color:var(--gold);color:var(--gold);animation:pulse 1.1s infinite;}
+.tab.tdone{border-color:var(--green);color:var(--green);}
+.tab.terr{border-color:var(--red);color:var(--red);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* FILTER ROW */
+.filter-row{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem;}
+.fcount{font-size:.74rem;color:var(--text2);}
+.fcount span{color:var(--cyan);}
+
+/* SECTION HEAD */
+.sec-head{display:flex;align-items:center;gap:.7rem;margin:1.75rem 0 .8rem;}
+.sec-label{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;color:var(--text2);text-transform:uppercase;white-space:nowrap;}
+.sec-line{flex:1;height:1px;background:var(--border);}
+.sec-ct{font-family:var(--mono);font-size:.6rem;color:var(--cyan);background:var(--cyan-dim);border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:2px 7px;}
+
+/* JOB CARD */
+.cards{display:flex;flex-direction:column;gap:.75rem;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.35rem;display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:start;text-decoration:none;color:inherit;transition:border-color .18s,background .18s,transform .18s;cursor:pointer;}
+.card:hover{border-color:var(--cyan);background:var(--surface2);transform:translateY(-2px);}
+.card-title{font-size:.94rem;font-weight:600;color:var(--text);margin-bottom:3px;line-height:1.3;}
+.card-company{font-size:.8rem;color:var(--cyan);margin-bottom:7px;font-weight:500;}
+.card-tags{display:flex;flex-wrap:wrap;gap:.32rem;margin-bottom:7px;}
+.tag{font-size:.63rem;padding:2px 8px;border-radius:10px;font-weight:600;letter-spacing:.02em;white-space:nowrap;}
+.t-remote{background:var(--green-dim);color:var(--green);border:1px solid rgba(0,224,154,.25);}
+.t-reloc{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(245,196,0,.25);}
+.t-role{background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,212,255,.2);}
+.t-country{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(153,102,255,.25);}
+.t-salary{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(245,196,0,.2);}
+.t-src{background:rgba(255,255,255,.04);color:var(--text2);border:1px solid var(--border);}
+.t-co{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(153,102,255,.25);}
+.t-visa{background:rgba(245,196,0,.15);color:var(--gold);border:1px solid rgba(245,196,0,.3);font-size:.59rem;}
+.t-gen{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(255,140,66,.25);}
+.t-va{background:var(--pink-dim);color:var(--pink);border:1px solid rgba(255,77,184,.25);}
+.card-snippet{font-size:.79rem;color:var(--text2);line-height:1.65;}
+.card-right{display:flex;flex-direction:column;align-items:flex-end;gap:.45rem;flex-shrink:0;}
+.apply-btn{padding:6px 14px;border-radius:7px;border:1px solid rgba(0,212,255,.4);background:var(--cyan-dim);color:var(--cyan);font-size:.7rem;font-family:var(--mono);text-decoration:none;white-space:nowrap;transition:background .15s;cursor:pointer;}
+.apply-btn:hover{background:rgba(0,212,255,.2);}
+.match-lbl{font-family:var(--mono);font-size:.58rem;color:var(--green);text-align:right;}
+.reloc-lbl{font-family:var(--mono);font-size:.58rem;color:var(--gold);text-align:right;}
+@media(max-width:560px){.card{grid-template-columns:1fr;}.card-right{flex-direction:row;justify-content:flex-start;}}
+
+/* STATE BOXES */
+.state-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:3.5rem 2rem;text-align:center;}
+.spinner{width:34px;height:34px;border:2px solid var(--border2);border-top-color:var(--cyan);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto .9rem;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.state-icon{font-size:2.4rem;margin-bottom:.9rem;}
+.state-title{font-family:var(--mono);font-size:.78rem;color:var(--cyan);margin-bottom:.45rem;}
+.state-sub{font-size:.81rem;color:var(--text2);line-height:1.65;max-width:430px;margin:0 auto;}
+
+/* FOOTER */
+footer{margin-top:3rem;padding-top:1.4rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;font-size:.7rem;color:var(--text2);}
+footer a{color:var(--cyan);text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="hdr">
+    <div class="logo">
+      <div class="logo-box">CN</div>
+      <div>
+        <div class="logo-name">CYBER NATE</div>
+        <div class="logo-sub">cybernatesec.netlify.app</div>
+      </div>
+    </div>
+    <span class="ver">AI JOB BOARD v2.1</span>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>Global <em>Remote</em> &amp; Relocation Jobs<br>— <em>AI-Matched</em> to Your Profile</h1>
+  <p>Live search across job boards, company career pages, and relocation-ready openings. Built for Nathaniel T.O. — SOC · DFIR · Threat Intel · IT Support · Web Dev · VA · Helpdesk · IT Instructor.</p>
+</div>
+
+<!-- DEPLOY NOTICE (shown when file:// protocol) -->
+<div class="deploy-notice" id="deployNotice">
+  ⚠️ <strong>Running locally?</strong> Open <code>index.html</code>, find <code>callClaude()</code> and add:
+  <code>'x-api-key': 'sk-ant-...'</code> + <code>'anthropic-dangerous-direct-browser-access': 'true'</code> to the headers object, and change <code>API_URL</code> to <code>https://api.anthropic.com/v1/messages</code>.
+  On <strong>Netlify</strong>: set env var <code>ANTHROPIC_API_KEY</code> and deploy <code>netlify/functions/claude-proxy.js</code> — proxy is already wired in.
+</div>
+
+<!-- CONTROLS -->
+<div class="panel">
+  <div class="panel-grid">
+
+    <!-- ROLE GROUPS -->
+    <div class="ctrl-full">
+      <span class="clabel">Role Groups — Select All That Apply</span>
+      <div class="role-groups">
+
+        <!-- Group 1: Cyber / Security -->
+        <div>
+          <div class="role-group-head">
+            <div class="rg-dot" style="background:var(--cyan)"></div>
+            <span class="rg-label" style="color:var(--cyan)">Cybersecurity &amp; SOC</span>
+          </div>
+          <div class="pill-row" id="g-cyber">
+            <button class="pill sel-cy" data-val="SOC Analyst" onclick="togglePill(this,'cyber','sel-cy')">SOC Analyst</button>
+            <button class="pill sel-cy" data-val="Cyber Intelligence Analyst" onclick="togglePill(this,'cyber','sel-cy')">Cyber Intelligence</button>
+            <button class="pill sel-cy" data-val="DFIR Analyst" onclick="togglePill(this,'cyber','sel-cy')">DFIR Analyst</button>
+            <button class="pill sel-cy" data-val="Threat Intelligence Analyst" onclick="togglePill(this,'cyber','sel-cy')">Threat Intel</button>
+            <button class="pill" data-val="Penetration Tester" onclick="togglePill(this,'cyber','sel-cy')">Pen Tester</button>
+            <button class="pill" data-val="Security Analyst" onclick="togglePill(this,'cyber','sel-cy')">Security Analyst</button>
+          </div>
+        </div>
+
+        <!-- Group 2: IT -->
+        <div>
+          <div class="role-group-head">
+            <div class="rg-dot" style="background:var(--green)"></div>
+            <span class="rg-label" style="color:var(--green)">IT Support &amp; Systems</span>
+          </div>
+          <div class="pill-row" id="g-it">
+            <button class="pill sel-gr" data-val="IT Support Technician" onclick="togglePill(this,'it','sel-gr')">IT Support</button>
+            <button class="pill sel-gr" data-val="Sysadmin" onclick="togglePill(this,'it','sel-gr')">Sysadmin</button>
+            <button class="pill sel-gr" data-val="IT Instructor" onclick="togglePill(this,'it','sel-gr')">IT Instructor</button>
+            <button class="pill" data-val="Network Administrator" onclick="togglePill(this,'it','sel-gr')">Network Admin</button>
+            <button class="pill" data-val="Cloud Support Engineer" onclick="togglePill(this,'it','sel-gr')">Cloud Support</button>
+          </div>
+        </div>
+
+        <!-- Group 3: Web Dev -->
+        <div>
+          <div class="role-group-head">
+            <div class="rg-dot" style="background:var(--purple)"></div>
+            <span class="rg-label" style="color:var(--purple)">Web Development</span>
+          </div>
+          <div class="pill-row" id="g-dev">
+            <button class="pill sel-pu" data-val="Junior Web Developer" onclick="togglePill(this,'dev','sel-pu')">Web Developer</button>
+            <button class="pill sel-pu" data-val="Frontend Developer React" onclick="togglePill(this,'dev','sel-pu')">Frontend / React</button>
+            <button class="pill" data-val="Full Stack Developer" onclick="togglePill(this,'dev','sel-pu')">Full Stack</button>
+            <button class="pill" data-val="WordPress Developer" onclick="togglePill(this,'dev','sel-pu')">WordPress</button>
+          </div>
+        </div>
+
+        <!-- Group 4: Helpdesk / Customer Support -->
+        <div>
+          <div class="role-group-head">
+            <div class="rg-dot" style="background:var(--orange)"></div>
+            <span class="rg-label" style="color:var(--orange)">Helpdesk &amp; Customer Support</span>
+          </div>
+          <div class="pill-row" id="g-support">
+            <button class="pill sel-or" data-val="Helpdesk Technician" onclick="togglePill(this,'support','sel-or')">Helpdesk</button>
+            <button class="pill sel-or" data-val="Customer Support Specialist" onclick="togglePill(this,'support','sel-or')">Customer Support</button>
+            <button class="pill sel-or" data-val="Technical Support Specialist" onclick="togglePill(this,'support','sel-or')">Tech Support</button>
+            <button class="pill" data-val="Live Chat Support Agent" onclick="togglePill(this,'support','sel-or')">Live Chat Agent</button>
+            <button class="pill" data-val="Customer Success Manager" onclick="togglePill(this,'support','sel-or')">Customer Success</button>
+          </div>
+        </div>
+
+        <!-- Group 5: VA / Admin / Data Entry -->
+        <div>
+          <div class="role-group-head">
+            <div class="rg-dot" style="background:var(--pink)"></div>
+            <span class="rg-label" style="color:var(--pink)">Virtual Assistant, Admin &amp; Data Entry</span>
+          </div>
+          <div class="pill-row" id="g-va">
+            <button class="pill sel-pk" data-val="Virtual Assistant" onclick="togglePill(this,'va','sel-pk')">Virtual Assistant</button>
+            <button class="pill sel-pk" data-val="Administrative Assistant" onclick="togglePill(this,'va','sel-pk')">Admin Assistant</button>
+            <button class="pill sel-pk" data-val="Data Entry Specialist" onclick="togglePill(this,'va','sel-pk')">Data Entry</button>
+            <button class="pill" data-val="Executive Assistant" onclick="togglePill(this,'va','sel-pk')">Executive Assistant</button>
+            <button class="pill" data-val="Online Research Assistant" onclick="togglePill(this,'va','sel-pk')">Research Assistant</button>
+            <button class="pill" data-val="Project Coordinator" onclick="togglePill(this,'va','sel-pk')">Project Coordinator</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SEARCH MODE -->
+    <div class="ctrl-full">
+      <span class="clabel">Search Mode</span>
+      <div class="mode-row">
+        <button class="pill sel-cy" data-mode="remote" onclick="setMode(this)">🌐 Remote Only</button>
+        <button class="pill" data-mode="reloc" onclick="setMode(this)">✈️ Relocation / Sponsorship</button>
+        <button class="pill" data-mode="both" onclick="setMode(this)">🔀 Both</button>
+      </div>
+    </div>
+
+    <!-- REMOTE COUNTRIES -->
+    <div>
+      <span class="clabel">Remote — Countries <small style="color:var(--text3);font-size:.55rem">(hires internationally)</small></span>
+      <div class="pill-row" id="rc-row">
+        <button class="pill sel-cy" data-val="USA" onclick="togglePill(this,'rc','sel-cy')">🇺🇸 USA</button>
+        <button class="pill sel-cy" data-val="UK" onclick="togglePill(this,'rc','sel-cy')">🇬🇧 UK</button>
+        <button class="pill sel-cy" data-val="Canada" onclick="togglePill(this,'rc','sel-cy')">🇨🇦 Canada</button>
+        <button class="pill sel-cy" data-val="Australia" onclick="togglePill(this,'rc','sel-cy')">🇦🇺 Australia</button>
+        <button class="pill sel-cy" data-val="New Zealand" onclick="togglePill(this,'rc','sel-cy')">🇳🇿 NZ</button>
+        <button class="pill sel-cy" data-val="Germany" onclick="togglePill(this,'rc','sel-cy')">🇩🇪 Germany</button>
+        <button class="pill sel-cy" data-val="UAE" onclick="togglePill(this,'rc','sel-cy')">🇦🇪 UAE</button>
+        <button class="pill" data-val="Netherlands" onclick="togglePill(this,'rc','sel-cy')">🇳🇱 Netherlands</button>
+        <button class="pill" data-val="Singapore" onclick="togglePill(this,'rc','sel-cy')">🇸🇬 Singapore</button>
+        <button class="pill" data-val="Global" onclick="togglePill(this,'rc','sel-cy')">🌐 Global / Any</button>
+      </div>
+    </div>
+
+    <!-- RELOCATION COUNTRIES -->
+    <div id="relocPanel">
+      <span class="clabel">Relocation / Sponsorship — Countries</span>
+      <div class="pill-row" id="rl-row">
+        <button class="pill sel-go" data-val="Australia" onclick="togglePill(this,'rl','sel-go')">🇦🇺 Australia</button>
+        <button class="pill sel-go" data-val="New Zealand" onclick="togglePill(this,'rl','sel-go')">🇳🇿 NZ</button>
+        <button class="pill sel-go" data-val="Canada" onclick="togglePill(this,'rl','sel-go')">🇨🇦 Canada</button>
+        <button class="pill sel-go" data-val="Germany" onclick="togglePill(this,'rl','sel-go')">🇩🇪 Germany</button>
+        <button class="pill" data-val="UAE" onclick="togglePill(this,'rl','sel-go')">🇦🇪 UAE</button>
+        <button class="pill" data-val="UK" onclick="togglePill(this,'rl','sel-go')">🇬🇧 UK</button>
+      </div>
+    </div>
+
+    <!-- COMPANY CAREERS -->
+    <div class="ctrl-full">
+      <span class="clabel">Company Career Pages — Direct Search</span>
+      <div class="pill-row" id="co-row">
+        <!-- Cyber / MSSP -->
+        <button class="pill sel-pu" data-val="Huntress" data-group-co="cyber" onclick="togglePill(this,'co','sel-pu')">Huntress</button>
+        <button class="pill sel-pu" data-val="Arctic Wolf" data-group-co="cyber" onclick="togglePill(this,'co','sel-pu')">Arctic Wolf</button>
+        <button class="pill sel-pu" data-val="Expel" data-group-co="cyber" onclick="togglePill(this,'co','sel-pu')">Expel</button>
+        <button class="pill sel-pu" data-val="Red Canary" data-group-co="cyber" onclick="togglePill(this,'co','sel-pu')">Red Canary</button>
+        <button class="pill sel-pu" data-val="Secureworks" data-group-co="cyber" onclick="togglePill(this,'co','sel-pu')">Secureworks</button>
+        <button class="pill sel-pu" data-val="Group-IB" data-group-co="cyber" onclick="togglePill(this,'co','sel-pu')">Group-IB</button>
+        <button class="pill" data-val="BlueVoyant" data-group-co="cyber" onclick="togglePill(this,'co','sel-pu')">BlueVoyant</button>
+        <button class="pill" data-val="Binary Defense" data-group-co="cyber" onclick="togglePill(this,'co','sel-pu')">Binary Defense</button>
+        <!-- Regional -->
+        <button class="pill" data-val="Help AG" data-group-co="regional" onclick="togglePill(this,'co','sel-pu')">Help AG 🇦🇪</button>
+        <button class="pill" data-val="CyberCX" data-group-co="regional" onclick="togglePill(this,'co','sel-pu')">CyberCX 🇦🇺</button>
+        <button class="pill" data-val="eSentire" data-group-co="regional" onclick="togglePill(this,'co','sel-pu')">eSentire 🇨🇦</button>
+        <button class="pill" data-val="Aura Information Security" data-group-co="regional" onclick="togglePill(this,'co','sel-pu')">Aura 🇳🇿</button>
+        <button class="pill" data-val="WithSecure" data-group-co="regional" onclick="togglePill(this,'co','sel-pu')">WithSecure 🇩🇪</button>
+        <!-- General Remote -->
+        <button class="pill sel-pu" data-val="Andela" data-group-co="general" onclick="togglePill(this,'co','sel-pu')">Andela</button>
+        <button class="pill" data-val="Crossover" data-group-co="general" onclick="togglePill(this,'co','sel-pu')">Crossover</button>
+        <button class="pill" data-val="Deel" data-group-co="general" onclick="togglePill(this,'co','sel-pu')">Deel</button>
+        <button class="pill" data-val="Turing" data-group-co="general" onclick="togglePill(this,'co','sel-pu')">Turing</button>
+      </div>
+    </div>
+
+    <!-- KEYWORD + SEARCH BTN -->
+    <div class="ctrl-full search-row">
+      <input class="kw-input" id="kwInput" placeholder="Extra keyword (e.g. SIEM, React, entry-level, Nigeria-friendly…)">
+      <button class="go-btn" id="goBtn" onclick="startSearch()">🔍 Search All Jobs</button>
+    </div>
+    <div class="ctrl-full">
+      <div class="prog-wrap" id="progWrap"><div class="prog-bar" id="progBar"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar" id="statsBar">
+  <div class="stat"><span class="stat-n" id="sTotal">0</span><span class="stat-l">total</span></div>
+  <div class="stat"><span class="stat-n" id="sRemote">0</span><span class="stat-l">remote</span></div>
+  <div class="stat"><span class="stat-n" id="sReloc">0</span><span class="stat-l">relocation</span></div>
+  <div class="stat"><span class="stat-n" id="sCareers">0</span><span class="stat-l">career pages</span></div>
+  <div class="stat"><span class="stat-n" id="sCyber">0</span><span class="stat-l">cyber/SOC</span></div>
+  <div class="stat"><span class="stat-n" id="sGen">0</span><span class="stat-l">VA/admin/support</span></div>
+  <div class="stat"><span class="stat-n" id="sTime">—</span><span class="stat-l">updated</span></div>
+</div>
+
+<!-- POST-SEARCH FILTER + TABS -->
+<div id="postCtrl" style="display:none">
+  <div class="filter-row">
+    <input class="kw-input" style="max-width:320px" id="filterInput" placeholder="Filter results…" oninput="renderJobs()">
+    <span class="fcount">Showing <span id="fCount">0</span> results</span>
+  </div>
+  <div class="tab-bar" id="tabBar"></div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="mainContent">
+  <div class="state-box">
+    <div class="state-icon">🎯</div>
+    <div class="state-title">Ready to search</div>
+    <div class="state-sub">Select your role groups, mode, countries, and any company career pages — then click <strong style="color:var(--cyan)">Search All Jobs</strong> to run live AI-powered searches.</div>
+  </div>
+</div>
+
+<footer>
+  <span>Cyber Nate AI Job Board v2.1 · Nathaniel T.O. · Lagos, Nigeria</span>
+  <span>Powered by Claude AI · <a href="https://cybernatesec.netlify.app" target="_blank">Portfolio</a> · <a href="https://rankupdea.netlify.app" target="_blank">RankUp</a></span>
+</footer>
+
+</div><!-- /wrap -->
+
+<script>
+// ─── STATE ─────────────────────────────────────────────────────────────────
+const SEL = {
+  cyber:   new Set(['SOC Analyst','Cyber Intelligence Analyst','DFIR Analyst','Threat Intelligence Analyst']),
+  it:      new Set(['IT Support Technician','Sysadmin','IT Instructor']),
+  dev:     new Set(['Junior Web Developer','Frontend Developer React']),
+  support: new Set(['Helpdesk Technician','Customer Support Specialist','Technical Support Specialist']),
+  va:      new Set(['Virtual Assistant','Administrative Assistant','Data Entry Specialist']),
+  rc:      new Set(['USA','UK','Canada','Australia','New Zealand','Germany','UAE']),
+  rl:      new Set(['Australia','New Zealand','Canada','Germany']),
+  co:      new Set(['Huntress','Arctic Wolf','Expel','Red Canary','Secureworks','Group-IB','Andela'])
+};
+let MODE = 'remote';
+let allJobs = [];
+let activeTab = 'all';
+
+// Role-to-display-group mapping
+const ROLE_GROUP = {
+  'SOC Analyst':'cyber','Cyber Intelligence Analyst':'cyber','DFIR Analyst':'cyber',
+  'Threat Intelligence Analyst':'cyber','Penetration Tester':'cyber','Security Analyst':'cyber',
+  'IT Support Technician':'it','Sysadmin':'it','IT Instructor':'it',
+  'Network Administrator':'it','Cloud Support Engineer':'it',
+  'Junior Web Developer':'dev','Frontend Developer React':'dev','Full Stack Developer':'dev','WordPress Developer':'dev',
+  'Helpdesk Technician':'support','Customer Support Specialist':'support','Technical Support Specialist':'support',
+  'Live Chat Support Agent':'support','Customer Success Manager':'support',
+  'Virtual Assistant':'va','Administrative Assistant':'va','Data Entry Specialist':'va',
+  'Executive Assistant':'va','Online Research Assistant':'va','Project Coordinator':'va'
+};
+
+const GROUP_META = {
+  cyber:   { label:'🔵 Cybersecurity & SOC',            color:'var(--cyan)',   tagClass:'t-role' },
+  it:      { label:'🟢 IT Support & Systems',            color:'var(--green)',  tagClass:'t-remote' },
+  dev:     { label:'🟣 Web Development',                 color:'var(--purple)', tagClass:'t-co' },
+  support: { label:'🟠 Helpdesk & Customer Support',     color:'var(--orange)', tagClass:'t-gen' },
+  va:      { label:'🩷 VA, Admin & Data Entry',           color:'var(--pink)',   tagClass:'t-va' },
+  careers: { label:'🏢 Company Career Pages',            color:'var(--purple)', tagClass:'t-co' },
+  reloc:   { label:'✈️ Relocation / Sponsored',          color:'var(--gold)',   tagClass:'t-reloc' }
+};
+
+// ─── PILL TOGGLE ────────────────────────────────────────────────────────────
+function togglePill(btn, group, selClass) {
+  const v = btn.dataset.val;
+  if (SEL[group] && SEL[group].has(v)) {
+    SEL[group].delete(v);
+    btn.className = 'pill';
+  } else {
+    SEL[group] && SEL[group].add(v);
+    btn.className = `pill ${selClass}`;
+  }
+}
+
+function setMode(btn) {
+  MODE = btn.dataset.mode;
+  document.querySelectorAll('[data-mode]').forEach(b => b.className = 'pill');
+  btn.className = 'pill sel-cy';
+  const rp = document.getElementById('relocPanel');
+  rp.style.opacity = MODE === 'remote' ? '0.4' : '1';
+  rp.style.pointerEvents = MODE === 'remote' ? 'none' : 'auto';
+}
+
+// ─── API CONFIG ─────────────────────────────────────────────────────────────
+// Production (Netlify): proxy handles the key
+// Local: change API_URL to https://api.anthropic.com/v1/messages and add key headers below
+const API_URL = '/.netlify/functions/claude-proxy';
+
+async function callClaude(prompt) {
+  const headers = { 'Content-Type': 'application/json' };
+  // LOCAL TESTING ONLY — remove before committing:
+  // headers['x-api-key'] = 'sk-ant-YOUR_KEY_HERE';
+  // headers['anthropic-version'] = '2023-06-01';
+  // headers['anthropic-dangerous-direct-browser-access'] = 'true';
+
+  const res = await fetch(API_URL, {
+    method: 'POST', headers,
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      system: `You are a precise job search assistant with live web access. Search for REAL, currently open jobs.
+Return ONLY a valid JSON array. No markdown, no backticks, no text outside the array.
+Each object must have exactly these fields:
+{
+  "title": string,
+  "company": string,
+  "location": string,
+  "salary": string or null,
+  "snippet": string (2 sentences: what the role involves and why it fits an African candidate with cyber/IT/admin background),
+  "url": string (direct job URL or company careers page),
+  "source": string,
+  "remote": boolean,
+  "relocation": boolean,
+  "sponsored": boolean
+}
+Real companies only. 2025 or 2026 postings only. No duplicates.`,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  const txt = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+  const clean = txt.replace(/```json|```/g,'').trim();
+  const s = clean.indexOf('['), e = clean.lastIndexOf(']');
+  if (s<0||e<0) return [];
+  return JSON.parse(clean.slice(s,e+1));
+}
+
+// ─── BUILD TASKS ─────────────────────────────────────────────────────────────
+function buildTasks() {
+  const tasks = [];
+  const kw = document.getElementById('kwInput').value.trim();
+  const rcList = [...SEL.rc].join(', ');
+  const rlList = [...SEL.rl].join(', ');
+
+  const groupDefs = [
+    { group:'cyber', label:'Cybersecurity/SOC', typeTag:'cyber' },
+    { group:'it',    label:'IT Support/Sysadmin/IT Instructor', typeTag:'it' },
+    { group:'dev',   label:'Web Development', typeTag:'dev' },
+    { group:'support',label:'Helpdesk/Customer Support', typeTag:'support' },
+    { group:'va',    label:'Virtual Assistant/Admin/Data Entry', typeTag:'va' }
+  ];
+
+  groupDefs.forEach(({ group, label, typeTag }) => {
+    const roles = [...SEL[group]];
+    if (!roles.length) return;
+    const roleStr = roles.join(', ');
+
+    if (MODE !== 'reloc') {
+      tasks.push({
+        key: `remote_${group}`,
+        tabLabel: `${GROUP_META[group].label.replace(/^[^\s]+\s/,'')} Remote`,
+        typeTag,
+        modeType: 'remote',
+        prompt: `Search for currently open REMOTE entry-level or junior jobs for these roles: ${roleStr}${kw?' with keywords: '+kw:''}. Target companies in or hiring from: ${rcList} who hire internationally from Africa/Nigeria for fully remote positions. 2025-2026 postings only. Up to 5 results. Return JSON array.`
+      });
+    }
+    if (MODE !== 'remote' && (group==='cyber'||group==='it'||group==='dev')) {
+      tasks.push({
+        key: `reloc_${group}`,
+        tabLabel: `${label} Relocation`,
+        typeTag,
+        modeType: 'reloc',
+        prompt: `Search for "${roleStr}" jobs in ${rlList} that offer VISA SPONSORSHIP or RELOCATION SUPPORT for international candidates from Nigeria. Entry-level or junior. 2025-2026 only. Set sponsored=true, relocation=true. Up to 5 results. Return JSON array.`
+      });
+    }
+  });
+
+  // Company careers task
+  const coList = [...SEL.co];
+  if (coList.length) {
+    tasks.push({
+      key: 'careers',
+      tabLabel: 'Company Careers',
+      typeTag: 'careers',
+      modeType: 'careers',
+      prompt: `Search the CAREER PAGES of these specific companies for open roles in cybersecurity, SOC analysis, threat intelligence, IT support, web development, helpdesk, or virtual assistant positions: ${coList.join(', ')}. Look for remote-friendly, entry-level, or internationally open positions. 2025-2026 only. Up to 8 results. Return JSON array.`
+    });
+  }
+
+  return tasks;
+}
+
+// ─── MAIN SEARCH ─────────────────────────────────────────────────────────────
+async function startSearch() {
+  const btn = document.getElementById('goBtn');
+  const allRoles = [...SEL.cyber,...SEL.it,...SEL.dev,...SEL.support,...SEL.va];
+  if (!allRoles.length) { alert('Please select at least one role.'); return; }
+
+  btn.disabled = true; btn.textContent = 'Searching…';
+  allJobs = [];
+
+  document.getElementById('progWrap').style.display = 'block';
+  document.getElementById('statsBar').style.display = 'none';
+  document.getElementById('postCtrl').style.display = 'none';
+  setProgress(0);
+
+  const tasks = buildTasks();
+
+  // Build tabs
+  const tabBar = document.getElementById('tabBar');
+  tabBar.innerHTML = `<button class="tab active" data-key="all" onclick="filterTab(this,'all')">All <span class="ct" id="ct_all">0</span></button>`;
+  tasks.forEach(t => {
+    tabBar.innerHTML += `<button class="tab tloading" id="tab_${t.key}" data-key="${t.key}" onclick="filterTab(this,'${t.key}')">${t.tabLabel}</button>`;
+  });
+
+  document.getElementById('mainContent').innerHTML = `
+    <div class="state-box">
+      <div class="spinner"></div>
+      <div class="state-title">AI searching live job boards &amp; career pages…</div>
+      <div class="state-sub">Running ${tasks.length} parallel searches across Cyber/SOC · IT · Web Dev · Helpdesk/Support · VA/Admin/Data Entry — remote worldwide and relocation targets. This takes 20–40 seconds.</div>
+    </div>`;
+
+  let done = 0;
+  await Promise.all(tasks.map(async task => {
+    const tabEl = document.getElementById(`tab_${task.key}`);
+    try {
+      const jobs = await callClaude(task.prompt);
+      const tagged = (jobs||[]).map(j => ({ ...j, _key: task.key, _typeTag: task.typeTag, _modeType: task.modeType }));
+      allJobs = allJobs.concat(tagged);
+      if (tabEl) {
+        tabEl.classList.remove('tloading'); tabEl.classList.add('tdone');
+        tabEl.innerHTML = `${task.tabLabel} <span class="ct">${tagged.length}</span>`;
+      }
+    } catch {
+      if (tabEl) { tabEl.classList.remove('tloading'); tabEl.classList.add('terr'); tabEl.innerHTML += ' ✕'; }
+    }
+    done++;
+    setProgress(Math.round((done/tasks.length)*100));
+    document.getElementById('ct_all').textContent = allJobs.length;
+  }));
+
+  setProgress(100);
+  setTimeout(() => document.getElementById('progWrap').style.display='none', 700);
+
+  // Stats
+  document.getElementById('sTotal').textContent   = allJobs.length;
+  document.getElementById('sRemote').textContent  = allJobs.filter(j=>j._modeType==='remote').length;
+  document.getElementById('sReloc').textContent   = allJobs.filter(j=>j._modeType==='reloc').length;
+  document.getElementById('sCareers').textContent = allJobs.filter(j=>j._modeType==='careers').length;
+  document.getElementById('sCyber').textContent   = allJobs.filter(j=>j._typeTag==='cyber').length;
+  document.getElementById('sGen').textContent     = allJobs.filter(j=>['support','va'].includes(j._typeTag)).length;
+  document.getElementById('sTime').textContent    = new Date().toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'});
+
+  document.getElementById('statsBar').style.display = 'flex';
+  document.getElementById('postCtrl').style.display = 'block';
+  activeTab = 'all';
+  renderJobs();
+
+  btn.disabled = false; btn.textContent = '🔄 Refresh Search';
+  if (window.location.protocol==='file:') document.getElementById('deployNotice').style.display='block';
+}
+
+function setProgress(p) { document.getElementById('progBar').style.width = p + '%'; }
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function filterTab(btn, key) {
+  activeTab = key;
+  document.querySelectorAll('.tab-bar .tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderJobs();
+}
+
+function renderJobs() {
+  const kw = (document.getElementById('filterInput')?.value||'').toLowerCase();
+  const filtered = allJobs.filter(j => {
+    const matchTab = activeTab==='all' || j._key===activeTab;
+    const matchKw  = !kw || (j.title+j.company+j.snippet+j.location+j.source).toLowerCase().includes(kw);
+    return matchTab && matchKw;
+  });
+
+  document.getElementById('fCount').textContent = filtered.length;
+
+  if (!filtered.length) {
+    document.getElementById('mainContent').innerHTML = `
+      <div class="state-box">
+        <div class="state-icon">🔍</div>
+        <div class="state-title">No results match your filter</div>
+        <div class="state-sub">Try a different keyword or switch to the "All" tab.</div>
+      </div>`;
+    return;
+  }
+
+  // Group by display category
+  const order = ['cyber','it','dev','support','va','reloc','careers'];
+  const groups = {};
+  filtered.forEach(j => {
+    const g = j._modeType==='reloc' ? 'reloc' : j._modeType==='careers' ? 'careers' : j._typeTag||'other';
+    (groups[g]=groups[g]||[]).push(j);
+  });
+
+  let html = '';
+  order.forEach(g => {
+    if (!groups[g]) return;
+    const meta = GROUP_META[g]||{ label: g, color:'var(--text2)' };
+    html += `<div class="sec-head">
+      <span class="sec-label" style="color:${meta.color}">${meta.label}</span>
+      <div class="sec-line"></div>
+      <span class="sec-ct">${groups[g].length}</span>
+    </div>
+    <div class="cards">`;
+    groups[g].forEach(j => html += buildCard(j));
+    html += '</div>';
+  });
+
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+function buildCard(j) {
+  const url = j.url||'#';
+  const isReloc = j._modeType==='reloc';
+  const isCareers = j._modeType==='careers';
+
+  const remoteTag  = j.remote     ? `<span class="tag t-remote">Remote</span>` : '';
+  const relocTag   = j.relocation || isReloc ? `<span class="tag t-reloc">Relocation</span>` : '';
+  const visaTag    = j.sponsored  ? `<span class="tag t-visa">🛂 Visa Sponsorship</span>` : '';
+  const salaryTag  = j.salary     ? `<span class="tag t-salary">💰 ${j.salary}</span>` : '';
+  const srcTag     = `<span class="tag t-src">${j.source||'Web'}</span>`;
+  const coTag      = isCareers    ? `<span class="tag t-co">Career Page</span>` : '';
+  const countryTag = j.location   ? `<span class="tag t-country">${j.location}</span>` : '';
+
+  const rightLabel = isReloc
+    ? `<span class="reloc-lbl">✈️ Reloc / Sponsored</span>`
+    : `<span class="match-lbl">✓ Profile Match</span>`;
+
+  return `
+  <a class="card" href="${url}" target="_blank" rel="noopener">
+    <div>
+      <div class="card-title">${j.title||'—'}</div>
+      <div class="card-company">${j.company||'—'}</div>
+      <div class="card-tags">${remoteTag}${relocTag}${visaTag}${countryTag}${salaryTag}${coTag}${srcTag}</div>
+      <div class="card-snippet">${j.snippet||''}</div>
+    </div>
+    <div class="card-right">
+      <a class="apply-btn" href="${url}" target="_blank" rel="noopener">Apply →</a>
+      ${rightLabel}
+    </div>
+  </a>`;
+}
+</script>
+</body>
+</html>
