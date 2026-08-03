@@ -597,23 +597,30 @@ async function startSearch() {
     </div>`;
 
   let done = 0;
-  await Promise.all(tasks.map(async task => {
-    const tabEl = document.getElementById(`tab_${task.key}`);
-    try {
-      const jobs = await callClaude(task.prompt);
-      const tagged = (jobs||[]).map(j => ({ ...j, _key: task.key, _typeTag: task.typeTag, _modeType: task.modeType }));
-      allJobs = allJobs.concat(tagged);
-      if (tabEl) {
-        tabEl.classList.remove('tloading'); tabEl.classList.add('tdone');
-        tabEl.innerHTML = `${task.tabLabel} <span class="ct">${tagged.length}</span>`;
+
+  // Run in batches of 2 to avoid Netlify function timeout (30s limit)
+  const batchSize = 2;
+  for (let i = 0; i < tasks.length; i += batchSize) {
+    const batch = tasks.slice(i, i + batchSize);
+    await Promise.all(batch.map(async task => {
+      const tabEl = document.getElementById(`tab_${task.key}`);
+      try {
+        const jobs = await callClaude(task.prompt);
+        const tagged = (jobs||[]).map(j => ({ ...j, _key: task.key, _typeTag: task.typeTag, _modeType: task.modeType }));
+        allJobs = allJobs.concat(tagged);
+        if (tabEl) {
+          tabEl.classList.remove('tloading'); tabEl.classList.add('tdone');
+          tabEl.innerHTML = `${task.tabLabel} <span class="ct">${tagged.length}</span>`;
+        }
+      } catch(e) {
+        console.error('Search error:', task.key, e.message);
+        if (tabEl) { tabEl.classList.remove('tloading'); tabEl.classList.add('terr'); tabEl.innerHTML += ' ✕'; }
       }
-    } catch {
-      if (tabEl) { tabEl.classList.remove('tloading'); tabEl.classList.add('terr'); tabEl.innerHTML += ' ✕'; }
-    }
-    done++;
-    setProgress(Math.round((done/tasks.length)*100));
-    document.getElementById('ct_all').textContent = allJobs.length;
-  }));
+      done++;
+      setProgress(Math.round((done/tasks.length)*100));
+      document.getElementById('ct_all').textContent = allJobs.length;
+    }));
+  }
 
   setProgress(100);
   setTimeout(() => document.getElementById('progWrap').style.display='none', 700);
