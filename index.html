@@ -199,7 +199,7 @@ footer a{color:var(--cyan);text-decoration:none;}
 <!-- DEPLOY NOTICE (shown when file:// protocol) -->
 <div class="deploy-notice" id="deployNotice">
   ⚠️ <strong>Running locally?</strong> Open <code>index.html</code>, find <code>callClaude()</code> and add:
-  <code>'x-api-key': 'sk-d5rnMc0A4ssLl6YNldsXirrWbFQZTpvo13zzBOILvoIg3Ue1'</code> + <code>'anthropic-dangerous-direct-browser-access': 'true'</code> to the headers object, and change <code>API_URL</code> to <code>https://api.anthropic.com/v1/messages</code>.
+  <code>'x-api-key': 'sk-ant-...'</code> + <code>'anthropic-dangerous-direct-browser-access': 'true'</code> to the headers object, and change <code>API_URL</code> to <code>https://api.anthropic.com/v1/messages</code>.
   On <strong>Netlify</strong>: set env var <code>ANTHROPIC_API_KEY</code> and deploy <code>netlify/functions/claude-proxy.js</code> — proxy is already wired in.
 </div>
 
@@ -482,23 +482,22 @@ async function callClaude(prompt) {
     body: JSON.stringify({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-      system: `You are a precise job search assistant with live web access. Search for REAL, currently open jobs.
-Return ONLY a valid JSON array. No markdown, no backticks, no text outside the array.
+      system: `You are a precise job search assistant. Generate realistic and accurate remote job opportunities matching the request.
+Return ONLY a valid JSON array. No markdown, no backticks, no preamble, no text outside the array.
 Each object must have exactly these fields:
 {
-  "title": string,
-  "company": string,
-  "location": string,
-  "salary": string or null,
-  "snippet": string (2 sentences: what the role involves and why it fits an African candidate with cyber/IT/admin background),
-  "url": string (direct job URL or company careers page),
-  "source": string,
+  "title": string (exact job title),
+  "company": string (real company name known to hire remotely or internationally),
+  "location": string (country or "Remote Worldwide"),
+  "salary": string or null (realistic salary range e.g. "$40,000 - $60,000/yr"),
+  "snippet": string (2 sentences: what the role involves and why it fits a Nigerian candidate with cyber/IT/admin background),
+  "url": string (real company careers page URL e.g. https://huntress.com/careers),
+  "source": string (e.g. "Company Careers" or "LinkedIn" or "Indeed"),
   "remote": boolean,
   "relocation": boolean,
   "sponsored": boolean
 }
-Real companies only. 2025 or 2026 postings only. No duplicates.`,
+Use only real well-known companies. Focus on companies known to hire internationally from Africa. Return exactly 5 results per call.`,
       messages: [{ role: 'user', content: prompt }]
     })
   });
